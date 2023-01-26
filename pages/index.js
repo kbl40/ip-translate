@@ -60,22 +60,24 @@ export default function Home() {
             onChange={onUserChangedText}
           />
           <div className={styles.promptButtons}>
-            <a className={styles.generateButton} onClick={callGenerateEndpoint}>
+            <a className={isGenerating ? styles.generateButton + styles.loading : styles.generateButton} onClick={callGenerateEndpoint}>
               <div className={styles.generate}>
-                <p>Generate</p>
+                {isGenerating ? <span className={styles.loader}></span> : <p>Generate</p>}
               </div>
             </a>
           </div>
-          <div className={styles.output}>
-            <div className={styles.outputHeaderContainer}>
-              <div className={styles.outputHeader}>
-                <h3>Output</h3>
+          {apiOutput && (
+            <div className={styles.output}>
+              <div className={styles.outputHeaderContainer}>
+                <div className={styles.outputHeader}>
+                  <h3>Output</h3>
+                </div>
+              </div>
+              <div className={styles.outputContent}>
+                <p>{apiOutput}</p>
               </div>
             </div>
-            <div className={styles.outputContent}>
-              <p>{apiOutput}</p>
-            </div>
-          </div>
+          )}
         </div>
       </main>
     </>
