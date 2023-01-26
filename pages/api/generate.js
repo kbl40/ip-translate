@@ -35,7 +35,7 @@ const generateAction = async (req, res) => {
 
     const secondPromptOutput = secondPromptCompletion.data.choices.pop()
 
-    res.status(200).json({ output: secondPromptOutput })
+    res.status(200).json({ output: basePromptOutput })
 }
 
 export default generateAction
