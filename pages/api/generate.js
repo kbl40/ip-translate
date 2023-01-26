@@ -14,7 +14,7 @@ const generateAction = async (req, res) => {
     const baseCompletion = await openai.createCompletion({
         model: 'text-davinci-003',
         prompt: `${basePromptPrefix}${req.body.userInput}\n`,
-        temperature: 0.8,
+        temperature: 0.2,
         max_tokens: 250,
     })
 
@@ -22,18 +22,18 @@ const generateAction = async (req, res) => {
 
     // build the second prompt that feeds in the summary output from prompt 1
 
-    const secondPrompt = `
-        List five to ten commercialization ideas for the technology described in US Patent Number ${req.body.userInput}. It was described as ${basePromptOutput.text}.
-    `
+    // const secondPrompt = `
+    //     List five to ten commercialization ideas for the technology described in US Patent Number ${req.body.userInput}. It was described as ${basePromptOutput.text}.
+    // `
 
-    const secondPromptCompletion = await openai.createCompletion({
-        model: 'text-davinci-003',
-        prompt: `${secondPrompt}`,
-        temperature: 0.8,
-        max_tokens: 1000,
-    })
+    // const secondPromptCompletion = await openai.createCompletion({
+    //     model: 'text-davinci-003',
+    //     prompt: `${secondPrompt}`,
+    //     temperature: 0.8,
+    //     max_tokens: 1000,
+    // })
 
-    const secondPromptOutput = secondPromptCompletion.data.choices.pop()
+    // const secondPromptOutput = secondPromptCompletion.data.choices.pop()
 
     res.status(200).json({ output: basePromptOutput })
 }
