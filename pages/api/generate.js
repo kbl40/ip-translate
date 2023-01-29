@@ -15,7 +15,7 @@ const generateAction = async (req, res) => {
         model: 'text-davinci-003',
         prompt: `${basePromptPrefix}${req.body.userInput}\n`,
         temperature: 0.1,
-        max_tokens: 750,
+        max_tokens: 500,
     })
 
     const summaryOutput = baseCompletion.data.choices.pop()
@@ -27,8 +27,8 @@ const generateAction = async (req, res) => {
     const secondPromptCompletion = await openai.createCompletion({
         model: 'text-davinci-003',
         prompt: `${secondPrompt}`,
-        temperature: 0.3,
-        max_tokens: 1000,
+        temperature: 0.2,
+        max_tokens: 750,
     })
 
     const secondPromptOutput = secondPromptCompletion.data.choices.pop()
@@ -42,8 +42,8 @@ const generateAction = async (req, res) => {
     const thirdPromptCompletion = await openai.createCompletion({
         model: 'text-davinci-003',
         prompt: `${thirdPrompt}`,
-        temperature: 0.3, 
-        max_tokens: 1250,
+        temperature: 0.2, 
+        max_tokens: 1000,
     })
 
     const thirdPromptOutput = thirdPromptCompletion.data.choices.pop()

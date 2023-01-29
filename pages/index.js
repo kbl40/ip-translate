@@ -13,6 +13,7 @@ export default function Home() {
 
   const callGenerateEndpoint = async () => {
     setIsGenerating(true)
+    setApiOutput('')
     console.log("Calling OpenAI...")
 
     const response = await fetch('/api/generate', {
@@ -57,7 +58,7 @@ export default function Home() {
             <p>Please provide a valid US Patent Number to get started.</p>
           </div>
           <input 
-            placeholder="e.g. 123,456 B2"
+            placeholder="e.g. 123,456 B2 Overhead Storage System"
             className={styles.promptBox}
             value={userInput}
             onChange={onUserChangedText}
