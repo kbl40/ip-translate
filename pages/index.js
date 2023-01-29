@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
-import { Inter } from '@next/font/google'
+// import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.css'
 
-const inter = Inter({ subsets: ['latin'] })
+// const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
   const [userInput, setUserInput] = useState('')
@@ -25,9 +25,10 @@ export default function Home() {
 
     const data = await response.json()
     const { output } = data
-    console.log("OpenAI replied...", output.text)
+    console.log("OpenAI replied...")
+    console.log(output)
 
-    setApiOutput(`${output.text}`)
+    setApiOutput(output)
     setIsGenerating(false)
   }
   
@@ -45,8 +46,10 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <div className={styles.description}>
+        <div className={styles.headerTitle}>
           <h1>IP.translate</h1>
+        </div>
+        <div className={styles.headerSubtitle}>
           <h2>IP summarized easily for your commercialization needs</h2>
         </div>
         <div className={styles.promptContainer}>
@@ -54,13 +57,13 @@ export default function Home() {
             <p>Please provide a valid US Patent Number to get started.</p>
           </div>
           <input 
-            placeholder="e.g. 123456B2"
+            placeholder="e.g. 123,456 B2"
             className={styles.promptBox}
             value={userInput}
             onChange={onUserChangedText}
           />
           <div className={styles.promptButtons}>
-            <a className={isGenerating ? styles.generateButton + styles.loading : styles.generateButton} onClick={callGenerateEndpoint}>
+            <a className={isGenerating ? [styles.generateButton, styles.loading].join(' ')  : styles.generateButton} onClick={callGenerateEndpoint}>
               <div className={styles.generate}>
                 {isGenerating ? <span className={styles.loader}></span> : <p>Generate</p>}
               </div>
