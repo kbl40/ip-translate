@@ -318,6 +318,10 @@
     width: 100%;
   }
 
+    .main {
+      padding: 2rem;
+    }
+
   .headerTitle h1 {
     font-size: 50px;
   }
@@ -342,6 +346,10 @@
 
   .promptBox {
     width: 100%;
+  }
+
+  .outputContent p {
+    font-size: 0.85rem;
   }
 }
 

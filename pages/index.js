@@ -2,6 +2,8 @@ import { useState } from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '@/styles/Home.module.css'
+import axios from 'axios'
+import cheerio from 'cheerio'
 // import request from 'request'
 // import { Cheerio } from 'cheerio'
 
@@ -18,13 +20,7 @@ export default function Home() {
     setApiOutput('')
     console.log("Calling OpenAI...")
 
-    // set the url based on the user input
-    const url = `https://patents.google.com/patent/US${userInput}/en`
-    
-    // call a helper function that will scrape the patent page.
-    // helper function return value used in setPatentSummary(returnVal) allowing to pass in the fetch.
-    const patentText = scrapePatent(url)
-    setPatentSummary(patentText)
+    console.log(patentSummary)
 
     // patentSummary is what will need to be passed to the api.
     // will need to update the base prompt in the api as well in generate.js
@@ -65,8 +61,31 @@ export default function Home() {
     paragraphs_text_joined = ''.join(paragraphs_text)[0:14000]
   */
 
-  const scrapePatent = (patentUrl) => {
+  // helper function to scrape the patent html. need to drill down to the correct elements similar to python code above.
+  const callScrapePatent = async () => {
+    setPatentSummary('')
+    // set the url based on the user input
+    const url = `https://patents.google.com/patent/US${userInput}/en`
+    const result = await axios.get(`https://peaceful-badlands-35741.herokuapp.com/${url}`)
+    const $ = cheerio.load(result.data) // result.data returns the html. I'll want this to drill down to what I need.
 
+    let list = []
+    $('div[class="description"]').find('.description-paragraph').each(function(index, element) {
+      list.push($(element).text())
+    })
+    const patentString = list.join(' ').slice(0, 14000)
+    console.log(patentString)
+
+    console.log(patentString.length)
+    console.log(typeof patentString)
+    
+    if (patentString.length === 0) {
+      console.log('Patent text not pulled...')
+    } else {
+      console.log('Patent text pulled...')
+    }
+
+    setPatentSummary(patentString)
   }
   
   const onUserChangedText = (event) => {
@@ -100,6 +119,11 @@ export default function Home() {
             onChange={onUserChangedText}
           />
           <div className={styles.promptButtons}>
+            <a className={styles.generateButton} onClick={callScrapePatent}>
+              <div className={styles.generate}>
+                <p>Get</p>
+              </div>
+            </a>
             <a className={isGenerating ? [styles.generateButton, styles.loading].join(' ')  : styles.generateButton} onClick={callGenerateEndpoint}>
               <div className={styles.generate}>
                 {isGenerating ? <span className={styles.loader}></span> : <p>Generate</p>}

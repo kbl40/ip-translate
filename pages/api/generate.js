@@ -12,7 +12,7 @@ const generateAction = async (req, res) => {
     console.log(`API: ${basePromptPrefix}${req.body.patentSummary}`)
 
     // redo prompt
-    const summaryPrompt = `${req.body.patentSummary}. Write a simple summary of this patent text and describes what makes the patent novel. Ignore the numbering of the words in the original patent text.`
+    const summaryPrompt = `${basePromptPrefix}${req.body.patentSummary}. Write a simple summary of this patent text and describes what makes the patent novel. Ignore the numbering of the words in the original patent text.`
 
     const baseCompletion = await openai.createCompletion({
         model: 'text-davinci-003',
