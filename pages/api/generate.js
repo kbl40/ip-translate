@@ -6,17 +6,22 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration)
 
-const basePromptPrefix = `Write copy explaining a patented technology. The target audience for the copy should be non-technical personnel. The copy should highlight the novelty of and provide an in-depth summary of US Patent Number `;
+const basePromptPrefix = `Patent text: `;
 
 const generateAction = async (req, res) => {
-    console.log(`API: ${basePromptPrefix}${req.body.userInput}`)
+    console.log(`API: ${basePromptPrefix}${req.body.patentSummary}`)
+
+    // redo prompt
+    const summaryPrompt = `${basePromptPrefix}${req.body.patentSummary}. Write a simple summary of this patent text and describes what makes the patent novel. Ignore the numbering of the words in the original patent text.`
 
     const baseCompletion = await openai.createCompletion({
         model: 'text-davinci-003',
-        prompt: `${basePromptPrefix}${req.body.userInput}\n`,
-        temperature: 0.1,
-        max_tokens: 500,
+        prompt: summaryPrompt,
+        temperature: 0.2,
+        max_tokens: 1000,
     })
+
+    // should be the same from here down.
 
     const summaryOutput = baseCompletion.data.choices.pop()
 

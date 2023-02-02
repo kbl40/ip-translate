@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
-// import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.css'
+import axios from 'axios'
+import cheerio from 'cheerio'
 // import request from 'request'
 // import { Cheerio } from 'cheerio'
 
@@ -10,6 +11,7 @@ import styles from '@/styles/Home.module.css'
 
 export default function Home() {
   const [userInput, setUserInput] = useState('')
+  const [patentSummary, setPatentSummary] = useState('')
   const [apiOutput, setApiOutput] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
 
@@ -18,12 +20,16 @@ export default function Home() {
     setApiOutput('')
     console.log("Calling OpenAI...")
 
+    console.log(patentSummary)
+
+    // patentSummary is what will need to be passed to the api.
+    // will need to update the base prompt in the api as well in generate.js
     const response = await fetch('/api/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ userInput }),
+      body: JSON.stringify({ patentSummary }),
     })
 
     const data = await response.json()
@@ -33,6 +39,53 @@ export default function Home() {
 
     setApiOutput(output)
     setIsGenerating(false)
+  }
+
+  // need to figure out the logic for this scraping.
+  /* Python code from Replit as a guide
+    url = f"https://patents.google.com/patent/US{patent}/en"
+
+    response = requests.get(url)
+    html = response.content
+
+    soup = BeautifulSoup(html, 'html.parser')
+
+    description = soup.find_all("div", {"class": "description"})[0]
+
+    paragraphs = description.find_all("div", {"class": "description-paragraph"})
+
+    paragraphs_text = []
+    for paragraph in paragraphs:
+      paragraphs_text.append(paragraph.text)
+
+    paragraphs_text_joined = ''.join(paragraphs_text)[0:14000]
+  */
+
+  // helper function to scrape the patent html. need to drill down to the correct elements similar to python code above.
+  const callScrapePatent = async () => {
+    setPatentSummary('')
+    // set the url based on the user input
+    const url = `https://patents.google.com/patent/US${userInput}/en`
+    const result = await axios.get(`https://peaceful-badlands-35741.herokuapp.com/${url}`)
+    const $ = cheerio.load(result.data) // result.data returns the html. I'll want this to drill down to what I need.
+
+    let list = []
+    $('div[class="description"]').find('.description-paragraph').each(function(index, element) {
+      list.push($(element).text())
+    })
+    const patentString = list.join(' ').slice(0, 14000)
+    console.log(patentString)
+
+    console.log(patentString.length)
+    console.log(typeof patentString)
+    
+    if (patentString.length === 0) {
+      console.log('Patent text not pulled...')
+    } else {
+      console.log('Patent text pulled...')
+    }
+
+    setPatentSummary(patentString)
   }
   
   const onUserChangedText = (event) => {
@@ -60,12 +113,17 @@ export default function Home() {
             <p>Please provide a valid US Patent Number to get started.</p>
           </div>
           <input 
-            placeholder="e.g. 123,456 B2 Overhead Storage System"
+            placeholder="e.g. 123456B2"
             className={styles.promptBox}
             value={userInput}
             onChange={onUserChangedText}
           />
           <div className={styles.promptButtons}>
+            <a className={styles.generateButton} onClick={callScrapePatent}>
+              <div className={styles.generate}>
+                <p>Get</p>
+              </div>
+            </a>
             <a className={isGenerating ? [styles.generateButton, styles.loading].join(' ')  : styles.generateButton} onClick={callGenerateEndpoint}>
               <div className={styles.generate}>
                 {isGenerating ? <span className={styles.loader}></span> : <p>Generate</p>}
