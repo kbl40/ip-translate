@@ -9,6 +9,8 @@ import cheerio from 'cheerio'
 
 // const inter = Inter({ subsets: ['latin'] })
 
+
+
 export default function Home() {
   const [userInput, setUserInput] = useState('')
   const [patentSummary, setPatentSummary] = useState('')
@@ -44,11 +46,12 @@ export default function Home() {
   // helper function to scrape the patent html. need to drill down to the correct elements similar to python code above.
   const callScrapePatent = async () => {
     setPatentSummary('')
-    
+    const herokuProxyUrl = process.env.NEXT_PUBLIC_HEROKU_PROXY_URL
+
     // set the url based on the user input
     try {
       const url = `https://patents.google.com/patent/US${userInput}/en`
-      const result = await axios.get(`https://peaceful-badlands-35741.herokuapp.com/${url}`)
+      const result = await axios.get(`${herokuProxyUrl}/${url}`)
       const $ = cheerio.load(result.data) // result.data returns the html. I'll want this to drill down to what I need.
 
       let list = []
