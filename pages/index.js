@@ -83,7 +83,7 @@ export default function Home() {
   
   const onUserChangedText = (event) => {
     console.log(event.target.value)
-    setUserInput(event.target.value)
+    setUserInput(event.target.value.trim())
   }
   
   return (
