@@ -41,52 +41,42 @@ export default function Home() {
     setIsGenerating(false)
   }
 
-  // need to figure out the logic for this scraping.
-  /* Python code from Replit as a guide
-    url = f"https://patents.google.com/patent/US{patent}/en"
-
-    response = requests.get(url)
-    html = response.content
-
-    soup = BeautifulSoup(html, 'html.parser')
-
-    description = soup.find_all("div", {"class": "description"})[0]
-
-    paragraphs = description.find_all("div", {"class": "description-paragraph"})
-
-    paragraphs_text = []
-    for paragraph in paragraphs:
-      paragraphs_text.append(paragraph.text)
-
-    paragraphs_text_joined = ''.join(paragraphs_text)[0:14000]
-  */
-
   // helper function to scrape the patent html. need to drill down to the correct elements similar to python code above.
   const callScrapePatent = async () => {
     setPatentSummary('')
-    // set the url based on the user input
-    const url = `https://patents.google.com/patent/US${userInput}/en`
-    const result = await axios.get(`https://peaceful-badlands-35741.herokuapp.com/${url}`)
-    const $ = cheerio.load(result.data) // result.data returns the html. I'll want this to drill down to what I need.
-
-    let list = []
-    $('div[class="description"]').find('.description-paragraph').each(function(index, element) {
-      list.push($(element).text())
-    })
-    const patentString = list.join(' ').slice(0, 14000)
-    console.log(patentString)
-
-    console.log(patentString.length)
-    console.log(typeof patentString)
     
-    if (patentString.length === 0) {
-      console.log('Patent text not pulled...')
-    } else {
-      console.log('Patent text pulled...')
-    }
+    // set the url based on the user input
+    try {
+      const url = `https://patents.google.com/patent/US${userInput}/en`
+      const result = await axios.get(`https://peaceful-badlands-35741.herokuapp.com/${url}`)
+      const $ = cheerio.load(result.data) // result.data returns the html. I'll want this to drill down to what I need.
 
-    setPatentSummary(patentString)
+      let list = []
+      $('div[class="description"]').find('.description-paragraph').each(function(index, element) {
+        list.push($(element).text())
+      })
+      const patentString = list.join(' ').slice(0, 14000)
+      console.log(patentString)
+
+      console.log(patentString.length)
+      console.log(typeof patentString)
+      
+      // console.log to check if valid input was provided.
+      if (patentString.length === 0) {
+        alert(`Nothing returned for US Patent Number ${userInput}. Please verify that a valid patent number was provided.`)
+      } else {
+        alert(`US Patent Number ${userInput} text returned successfully.`)
+      }
+
+      setPatentSummary(patentString)
+    } catch (error) {
+      console.error(error)
+      alert(`Nothing returned for US Patent Number ${userInput}. Please verify that a valid patent number was provided.`)
+    }
+    
   }
+
+  
   
   const onUserChangedText = (event) => {
     console.log(event.target.value)
