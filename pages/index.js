@@ -51,7 +51,7 @@ export default function Home() {
     // set the url based on the user input
     try {
       const url = `https://patents.google.com/patent/US${userInput}/en`
-      const result = await axios.get(`${herokuProxyUrl}/${url}`, {baseURL: ""})
+      const result = await axios.get(`${herokuProxyUrl}/${url}`, {baseURL:""})
       const $ = cheerio.load(result.data) // result.data returns the html. I'll want this to drill down to what I need.
 
       let list = []
