@@ -16,31 +16,36 @@ export default function Home() {
   const [patentSummary, setPatentSummary] = useState('')
   const [apiOutput, setApiOutput] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isValid, setIsValid] = useState(false)
 
   const callGenerateEndpoint = async () => {
-    setIsGenerating(true)
-    setApiOutput('')
-    console.log("Calling OpenAI...")
+    if (isValid) {
+      setIsGenerating(true)
+      setApiOutput('')
+      console.log("Calling OpenAI...")
 
-    console.log(patentSummary)
+      console.log(patentSummary)
 
-    // patentSummary is what will need to be passed to the api.
-    // will need to update the base prompt in the api as well in generate.js
-    const response = await fetch('/api/generate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ patentSummary }),
-    })
+      // patentSummary is what will need to be passed to the api.
+      // will need to update the base prompt in the api as well in generate.js
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ patentSummary }),
+      })
 
-    const data = await response.json()
-    const { output } = data
-    console.log("OpenAI replied...")
-    console.log(output)
+      const data = await response.json()
+      const { output } = data
+      console.log("OpenAI replied...")
+      console.log(output)
 
-    setApiOutput(output)
-    setIsGenerating(false)
+      setApiOutput(output)
+      setIsGenerating(false)
+      setIsValid(false)
+    }
+    
   }
 
   // helper function to scrape the patent html. need to drill down to the correct elements similar to python code above.
@@ -51,7 +56,7 @@ export default function Home() {
     // set the url based on the user input
     try {
       const url = `https://patents.google.com/patent/US${userInput}/en`
-      const result = await axios.get(`${herokuProxyUrl}/${url}`, {baseURL:""})
+      const result = await axios.get(`${herokuProxyUrl}/${url}`, {baseURL: ""})
       const $ = cheerio.load(result.data) // result.data returns the html. I'll want this to drill down to what I need.
 
       let list = []
@@ -69,6 +74,7 @@ export default function Home() {
         alert(`Nothing returned for US Patent Number ${userInput}. Please verify that a valid patent number was provided.`)
       } else {
         alert(`US Patent Number ${userInput} text returned successfully.`)
+        setIsValid(true)
       }
 
       setPatentSummary(patentString)
