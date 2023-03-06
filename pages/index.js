@@ -4,7 +4,7 @@ import Image from 'next/image'
 import styles from '@/styles/Home.module.css'
 import axios from 'axios'
 import cheerio from 'cheerio'
-// import request from 'request'
+// import request from 'request '
 // import { Cheerio } from 'cheerio'
 
 // const inter = Inter({ subsets: ['latin'] })
